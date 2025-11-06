@@ -1,6 +1,23 @@
+import { useContext } from 'react'
 import searchIcon from '../../assets/search.svg'
+import { LocationContext } from '../../context'
+import { getLocationNames } from '../../assets/data/locations'
+import { useDebounce } from '../../hooks'
 
 export default function Search() {
+  const { setSelectedLocation } = useContext(LocationContext)
+
+  const doSearch = useDebounce((keyword) => {
+    if (keyword.length < 3) return
+    const searchedLocation = getLocationNames(keyword)
+    setSelectedLocation(searchedLocation)
+  }, 500)
+
+  const handleChange = (e) => {
+    const keyword = e.target.value
+    doSearch(keyword)
+  }
+
   return (
     <form action="#">
       <div className="flex items-center space-x-2 py-2 px-3 group focus-within:bg-black/30 transition-all border-b border-white/50 focus-within:border-b-0 focus-within:rounded-md">
@@ -9,6 +26,7 @@ export default function Search() {
           type="search"
           placeholder="Search Location"
           required
+          onChange={handleChange}
         />
         <button type="submit">
           <img src={searchIcon} />
